@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """filtered_logger module"""
+from datetime import datetime
 import logging
 import mysql.connector
 from mysql.connector import connection
@@ -8,7 +9,13 @@ import re
 from typing import List
 
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='[HOLBERTON] %(name)s %(levelname)s %(asctime)s: %(message)s'
+)
+
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+FILTERED_FIELDS = ["name", "email", "phone", "ssn", "password"]
 
 
 def filter_datum(
@@ -37,13 +44,10 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """formats the logger"""
-        record.msg = filter_datum(
-            self.fields,
-            self.REDACTION,
-            record.msg,
-            self.SEPARATOR
-        )
-        return super().format(record)
+        message = super(RedactingFormatter, self).format(record)
+        redacted = filter_datum(self.fields, self.REDACTION,
+                                message, self.SEPARATOR)
+        return redacted
 
 
 def get_logger() -> logging.Logger:
@@ -76,3 +80,32 @@ def get_db() -> connection.MySQLConnection:
         host=host,
         database=database
     )
+
+
+def filter_data(data: dict) -> dict:
+    """Filters out sensitive data."""
+    return {
+        key: '***' if key in FILTERED_FIELDS else value for key,
+        value in data.items()}
+
+
+def main() -> None:
+    """Main function that retrieves and displays users' data in a filtered format."""
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM users;")
+    rows = cursor.fetchall()
+
+    for row in rows:
+        filtered_row = filter_data(row)
+        log_msg = "; ".join(
+            [f"{key}={value}" for key, value in filtered_row.items()])
+        logging.info(log_msg)
+
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
