@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """filtered_logger module"""
+import logging
+import mysql.connector
+import os
 import re
 from typing import List
-import logging
+
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(
@@ -27,7 +32,7 @@ class RedactingFormatter(logging.Formatter):
 
     def __init__(self, fields=None):
         super(RedactingFormatter, self).__init__(self.FORMAT)
-        self.fields = fields or []
+        self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
         """formats the logger"""
@@ -38,3 +43,20 @@ class RedactingFormatter(logging.Formatter):
             self.SEPARATOR
         )
         return super().format(record)
+
+
+def get_logger() -> logging.Logger:
+    """Creates and returns a logger named 'user_data'."""
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    """Create a StreamHandler and set the RedactingFormatter"""
+    stream_handler = logging.StreamHandler()
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    stream_handler.setFormatter(formatter)
+
+    """Add the handler to the logger"""
+    logger.addHandler(stream_handler)
+
+    return logger
