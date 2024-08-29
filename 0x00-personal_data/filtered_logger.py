@@ -30,6 +30,7 @@ class RedactingFormatter(logging.Formatter):
         self.fields = fields or []
 
     def format(self, record: logging.LogRecord) -> str:
+        """formats the logger"""
         record.msg = filter_datum(
             self.fields,
             self.REDACTION,
