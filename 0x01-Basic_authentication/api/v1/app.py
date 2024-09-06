@@ -51,7 +51,7 @@ def before_request():
         return
 
     excluded_paths = [
-        '/api/v1/status/',
+        '/api/v1/status',
         '/api/v1/unauthorized/',
         '/api/v1/forbidden/'
     ]
