@@ -10,6 +10,7 @@ AUTH = Auth()
 
 @app.route('/')
 def index():
+    """Simple endpoint"""
     return jsonify({"message": "Bienvenue"})
 
 
