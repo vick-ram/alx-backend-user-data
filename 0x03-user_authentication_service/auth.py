@@ -2,7 +2,7 @@
 """Encrypt password"""
 import bcrypt
 from db import DB
-from typing import TypeVar, Union
+from typing import Union
 from user import User
 from sqlalchemy.exc import NoResultFound
 import uuid
@@ -21,7 +21,7 @@ class Auth:
     def __init__(self):
         self._db = DB()
 
-    def register_user(self, email: str, password: str) -> TypeVar[User]:
+    def register_user(self, email: str, password: str) -> User:
         """Register a new user with the given email and password."""
         try:
             self._db.find_user_by(email=email)

@@ -5,16 +5,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from typing import TypeVar, Dict
 from sqlalchemy.exc import NoResultFound, InvalidRequestError
 
 from user import Base, User
 
 
 class DB:
-    """DB class
-    """
-
+    """DB class for handling database operations"""
     def __init__(self) -> None:
         """Initialize a new DB instance
         """
@@ -34,12 +31,12 @@ class DB:
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """Adds the user to the database"""
-        user = User(email=email, hashed_password=hashed_password)
-        self._session.add(user)
+        new_user = User(email=email, hashed_password=hashed_password)
+        self._session.add(new_user)
         self._session.commit()
-        return user
+        return new_user
 
-    def find_user_by(self, **kwargs: Dict[str, str]) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """Finds a user based on arbitrary keyword arguments
 
         Raises:
@@ -57,7 +54,7 @@ class DB:
         except InvalidRequestError as e:
             raise InvalidRequestError from e
 
-    def update_user(self, user_id: int, **kwargs: Dict[str, str]) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """Finds user with some specified id and updates
         the user with passed in keyword arguments"""
         try:
