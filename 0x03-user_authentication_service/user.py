@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""
+User model definition module.
+Defines a SQLAlchemy model for a users table with the following attributes:
+id, email, hashed_password, session_id, reset_token.
+"""
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 
